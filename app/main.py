@@ -4,6 +4,11 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from pathlib import Path
 
+from motor.motor_asyncio import AsyncIOMotorClient
+
+from app.models import mongodb
+from app.models.book import BookModel
+
 
 app = FastAPI()
 
@@ -14,6 +19,14 @@ templates = Jinja2Templates(directory=BASE_DIR/ "templates")
 
 @app.get("/",response_class=HTMLResponse)
 async def root(request: Request):
+    book=BookModel(
+        keyword="python",
+        publisher="lizb",
+        price=1200,
+        image="me.png"
+    )
+    save_book= await mongodb.engine.save(book)
+    print(save_book.model_dump(),flush=True)
     return templates.TemplateResponse(
         request,
         "index.html",
@@ -33,7 +46,9 @@ async def read_item(request:Request,q:str):
 @app.on_event("startup")
 async def on_app_start():
     print("hello server")
+    mongodb.connect()
 
 @app.on_event("shutdown")
 async def on_app_shutdown():
     print("goodbye server")
+    mongodb.close()
