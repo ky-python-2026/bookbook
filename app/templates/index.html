@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{title}}</title>
     <link rel="stylesheet" href="https://unpkg.com/mvp.css">
+    <style>
+        section {
+            display: flex;
+            flex-wrap: wrap;
+            gap:15px
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -17,7 +24,31 @@
         </form>
     </center>
     <main>
-        {{keyword}}
+        {% if books %}
+        <center>
+            <h3>{{books|length}}개 데이터 수집...</h3>
+        </center>
+        <section>
+            {% for book in books %}
+            <div>
+                <img src="{{book.image}}" width="150px" height="150px">
+                <p>
+                    {% if book.publisher | length >10 %}
+                    {{book.publisher[:10]}}...
+                    {% else %} {{book.publisher}} {% endif %}
+                </p>
+                <p>
+                    {{book.price}}원
+                </p>
+            </div>
+            {% endfor %}
+        </section>
+        
+        {% else %}
+        <center>
+            <h3>{{books|length}}개 데이터 수집...</h3>
+        </center>
+        {% endif %}
 
     </main>
 
